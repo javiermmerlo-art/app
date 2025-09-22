@@ -1,9 +1,3 @@
-from flask import Flask, request, jsonify
-import requests, os
-
-app = Flask(__name__)
-HF_TOKEN = os.getenv("HF_TOKEN")
-
 @app.route("/ai", methods=["POST"])
 def ai():
     texto = request.json.get("text", "")
@@ -17,12 +11,19 @@ def ai():
         timeout=60
     )
 
-    data = r.json()
-    # --- Manejo de errores y formato flexible ---
+    # --- Log de depuración ---
+    print("Status code:", r.status_code)
+    print("Raw text:", r.text)
+
+    try:
+        data = r.json()
+    except Exception as e:
+        return jsonify({"reply": f"Error: no se pudo decodificar JSON. Status {r.status_code}. Respuesta: {r.text}"})
+
     if isinstance(data, list) and len(data) > 0 and "generated_text" in data[0]:
         reply = data[0]["generated_text"]
     else:
-        # Devuelve todo el JSON de error para depurar
         reply = f"Error en HuggingFace: {data}"
 
     return jsonify({"reply": reply})
+
