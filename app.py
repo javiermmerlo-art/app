@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import requests, os
 
 app = Flask(__name__)
-HF_TOKEN = os.getenv("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")
+HF_TOKEN = os.getenv("HF_TOKEN")
 
 @app.route("/ai", methods=["POST"])
 def ai():
